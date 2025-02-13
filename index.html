@@ -1,8 +1,175 @@
-<html>
-  <head>
-    <title>Bầu Cua Xbet</title>
-  </head>
-  <body>
-  <h5>Hello World</h5>
-    </body>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Mở lì xì</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, #1a1a1a, #2a2a2a);
+            color: white;
+            text-align: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .box-container {
+            position: relative;
+            margin: 50px auto;
+            width: 300px;
+            height: 300px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .mystery-box {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.5));
+        }
+
+        .box-container:hover {
+            transform: scale(1.05);
+        }
+
+        .box-container.shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .item-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            animation: popIn 0.5s ease-out;
+        }
+
+        .item-card img {
+            width: 100%;
+            height: 100px;
+            object-fit: contain;
+        }
+
+        .rarity-Normal { color: #00ff00; }
+        .rarity-rare { color: #007bff; }
+        .rarity-epic { color: #9b00ff; }
+        .rarity-Secret { color: #ffd700; }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            90% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .history-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+            width: 250px;
+        }
+
+        .currency {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="currency">
+             0$
+            <button onclick="buyCurrency()">Nạp tiền</button>
+        </div>
+
+        <div class="box-container" onclick="openBox()">
+            <img src="https://i.imgur.com/E2YMewb.png" class="mystery-box" alt="Túi mù">
+        </div>
+
+        <h2>Vật phẩm đã nhận</h2>
+        <div class="result-grid" id="results"></div>
+
+        <div class="history-panel">
+            <h3>Lịch sử</h3>
+            <div id="history"></div>
+        </div>
+    </div>
+
+    <script>
+        const items = [
+            { name: "1 USD", img: "https://www.uscurrency.gov/sites/default/files/styles/bill_version/public/denominations/1_1963-present-front-1_0.jpg.webp?itok=4Y3M6xCA", rarity: "Normal" },
+            { name: "5 USD", img: "https://www.uscurrency.gov/sites/default/files/styles/bill_version/public/denominations/2_1976-present-front%20%281%29.jpg.webp?itok=V0CwcpFo", rarity: "Normal" },
+            { name: "10 USD", img: "https://www.uscurrency.gov/sites/default/files/styles/bill_version/public/denominations/%245-FRN-2021-face.png.webp?itok=RcxNac5p", rarity: "Normal" },
+            { name: "Gấu Bông", img: "https://cdn1.concung.com/2023/03/61977-99389-large_mobile/gau-bong-mom-long-xu-cao-cap-animo-tn.jpg", rarity: "Normal" },
+            { name: "Baby Three", img: "https://bizweb.dktcdn.net/thumb/1024x1024/100/376/706/products/fsef.jpg?v=1729239013170", rarity: "Secret" },
+            { name: "Cần Sa", img: "https://c.pxhere.com/photos/2d/ea/seedling_cannabis_marijuana-839871.jpg!d", rarity: "Secret" },
+        ];
+
+        function openBox() {
+            const box = document.querySelector('.box-container');
+            box.classList.add('shake');
+            
+            //document.getElementById('results').innerHTML = '';
+            
+            setTimeout(() => {
+                const randomItem = items[Math.floor(Math.random() * items.length)];
+                showResult(randomItem);
+                addToHistory(randomItem);
+                box.classList.remove('shake');
+            }, 500);
+        }
+
+        function showResult(item) {
+            const resultGrid = document.getElementById('results');
+            const itemCard = document.createElement('div');
+            itemCard.className = `item-card rarity-${item.rarity}`;
+            itemCard.innerHTML = `
+                <img src="${item.img}" alt="${item.name}">
+                <h3>${item.name}</h3>
+                <p class="rarity-${item.rarity}">${item.rarity.toUpperCase()}</p>
+            `;
+            resultGrid.prepend(itemCard);
+        }
+
+        function addToHistory(item) {
+            const history = document.getElementById('history');
+            const entry = document.createElement('div');
+            entry.innerHTML = `[${new Date().toLocaleTimeString()}] ${item.name} - <span class="rarity-${item.rarity}">${item.rarity}</span>`;
+            history.prepend(entry);
+        }
+
+        function buyCurrency() {
+
+            alert('Chức năng nạp tiền đang được bảo trì!');
+        }
+    </script>
+</body>
 </html>
